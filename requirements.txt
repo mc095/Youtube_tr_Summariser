@@ -1,4 +1,0 @@
-streamlit
-requests
-youtube-transcript-api
-huggingface_hub
