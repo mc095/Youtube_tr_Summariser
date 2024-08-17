@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Summarizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        #results { margin-top: 20px; }
+        .chunk { margin-bottom: 20px; border: 1px solid #ddd; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Summarize Your Youtube Lectures</h1>
+    <input type="text" id="youtube-url" placeholder="Enter YouTube URL">
+    <button onclick="summarize()">Summarize</button>
+    <div id="results"></div>
+
+    <script>
+        function summarize() {
+            const url = $('#youtube-url').val();
+            $('#results').html('Summarizing...');
+    
+            $.ajax({
+                url: '/summarize',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ url: url }),
+                success: function(data) {
+                    $('#results').empty();
+                    data.forEach(function(chunk) {
+                        $('#results').append(
+                            `<div class="chunk">
+                                <h3>(${chunk.start_time} - ${chunk.end_time})</h3>
+                                <div>${chunk.summary.replace(/\n/g, '<br>')}</div>
+                            </div>`
+                        );
+                    });
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $('#results').html('Error: ' + jqXHR.responseJSON.error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
